@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Order Confirmed — The Dorm Kitchen</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:     #0d1117;
+      --card:   #1d2535;
+      --gold:   #e8b84b;
+      --coral:  #f4845f;
+      --teal:   #3ecfb2;
+      --text:   #f0ece3;
+      --muted:  #8a8a8a;
+      --border: rgba(232,184,75,.15);
+    }
+
+    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+    html, body {
+      height:100%;
+      font-family:'DM Sans',sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      overflow-x:hidden;
+    }
+
+    body::before {
+      content:''; position:fixed; inset:0; z-index:0;
+      background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events:none;
+    }
+
+    /* blobs */
+    .blob-wrap { position:fixed; inset:0; z-index:0; overflow:hidden; pointer-events:none; }
+    .blob { position:absolute; border-radius:50%; filter:blur(90px); opacity:.15; animation:drift 18s ease-in-out infinite alternate; }
+    .blob-1 { width:450px; height:450px; background:var(--teal); top:-150px; right:-100px; }
+    .blob-2 { width:350px; height:350px; background:var(--gold); bottom:-80px; left:-80px; animation-delay:-7s; }
+    @keyframes drift { from{transform:translate(0,0);} to{transform:translate(20px,30px);} }
+
+    /* confetti canvas */
+    #confetti { position:fixed; inset:0; z-index:0; pointer-events:none; }
+
+    /* page */
+    .page {
+      position:relative; z-index:1;
+      min-height:100dvh;
+      display:flex; flex-direction:column;
+      align-items:center; justify-content:center;
+      max-width:430px; margin:0 auto;
+      padding:2rem 1.5rem 3rem;
+      text-align:center;
+    }
+
+    /* checkmark */
+    .check-ring {
+      width:96px; height:96px;
+      border-radius:50%;
+      background:linear-gradient(135deg, var(--teal), var(--gold));
+      display:flex; align-items:center; justify-content:center;
+      margin-bottom:1.8rem;
+      animation:popIn .6s cubic-bezier(.34,1.56,.64,1) both;
+      box-shadow:0 0 0 0 rgba(62,207,178,.4);
+      animation: popIn .6s cubic-bezier(.34,1.56,.64,1) both, ringPulse 2.5s 1s ease infinite;
+    }
+    .check-ring svg { width:44px; height:44px; }
+    @keyframes popIn {
+      from { opacity:0; transform:scale(.3); }
+      to   { opacity:1; transform:scale(1); }
+    }
+    @keyframes ringPulse {
+      0%   { box-shadow:0 0 0 0 rgba(62,207,178,.4); }
+      70%  { box-shadow:0 0 0 20px rgba(62,207,178,0); }
+      100% { box-shadow:0 0 0 0 rgba(62,207,178,0); }
+    }
+
+    /* text */
+    .confirm-tag {
+      font-size:.72rem; letter-spacing:.18em; text-transform:uppercase;
+      color:var(--teal); margin-bottom:.8rem;
+      animation:fadeUp .6s .2s ease both;
+    }
+    .confirm-title {
+      font-family:'Playfair Display',serif;
+      font-size:clamp(2.4rem,10vw,3.2rem);
+      font-weight:900; line-height:1.08;
+      animation:fadeUp .6s .3s ease both;
+    }
+    .confirm-title .accent { color:var(--gold); font-style:italic; }
+
+    .confirm-msg {
+      margin-top:.9rem;
+      font-size:.9rem; color:var(--muted); line-height:1.6;
+      animation:fadeUp .6s .4s ease both;
+    }
+
+    /* info pill */
+    .info-pill {
+      margin-top:1.8rem;
+      display:flex; align-items:center; gap:.6rem;
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:100px;
+      padding:.6rem 1.2rem;
+      font-size:.82rem;
+      animation:fadeUp .6s .5s ease both;
+    }
+    .info-pill .dot { width:8px; height:8px; border-radius:50%; background:var(--teal); animation:blink 1.5s ease infinite; }
+    @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:.3;} }
+
+    /* buttons */
+    .btn-group {
+      display:flex; flex-direction:column; gap:.75rem;
+      width:100%; margin-top:2rem;
+      animation:fadeUp .6s .65s ease both;
+    }
+    .btn {
+      display:flex; align-items:center; justify-content:center; gap:.6rem;
+      padding:.95rem; border-radius:14px;
+      font-family:'DM Sans',sans-serif;
+      font-size:.95rem; font-weight:600;
+      text-decoration:none; border:none; cursor:pointer;
+      transition:transform .2s, box-shadow .2s;
+    }
+    .btn-primary {
+      background:var(--gold); color:#0d1117;
+      box-shadow:0 6px 24px rgba(232,184,75,.3);
+    }
+    .btn-secondary {
+      background:var(--card);
+      color:var(--text);
+      border:1px solid var(--border);
+    }
+    .btn:hover { transform:translateY(-2px); }
+    .btn:active { transform:translateY(0); }
+
+    /* decorative emoji row */
+    .emoji-row {
+      font-size:1.8rem; letter-spacing:.3rem;
+      margin-top:2rem; opacity:.5;
+      animation:fadeUp .6s .8s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(18px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="blob-wrap">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+  </div>
+  <canvas id="confetti"></canvas>
+
+  <main class="page">
+    <div class="check-ring">
+      <svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M10 22L18 30L34 14" stroke="#0d1117" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+
+    <p class="confirm-tag">✦ You're all set</p>
+    <h1 class="confirm-title">Order<br><span class="accent">Confirmed!</span></h1>
+    <p class="confirm-msg">
+      Your pre-order has been sent via WhatsApp.<br>
+      We'll confirm shortly. Get ready for good food!
+    </p>
+
+    <div class="info-pill">
+      <span class="dot"></span>
+      <span>Awaiting WhatsApp confirmation</span>
+    </div>
+
+    <div class="btn-group">
+      <a href="index.html" class="btn btn-primary">
+        🏠 Back to Home
+      </a>
+      <a href="menu.html" class="btn btn-secondary">
+        📋 View Menu Again
+      </a>
+    </div>
+
+    <div class="emoji-row">🍔 🐠 🧋</div>
+  </main>
+
+  <script>
+    // ── Simple confetti ──
+    const canvas = document.getElementById('confetti');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const colors = ['#e8b84b','#3ecfb2','#f4845f','#f0ece3','#ffffff'];
+    const pieces = Array.from({length: 80}, () => ({
+      x: Math.random() * canvas.width,
+      y: -10 - Math.random() * 200,
+      w: 6 + Math.random() * 8,
+      h: 3 + Math.random() * 5,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      vx: (Math.random() - .5) * 2,
+      vy: 1.5 + Math.random() * 2.5,
+      angle: Math.random() * 360,
+      va: (Math.random() - .5) * 6,
+      opacity: 1,
+    }));
+
+    let frame = 0;
+    function drawConfetti() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      pieces.forEach(p => {
+        ctx.save();
+        ctx.globalAlpha = p.opacity;
+        ctx.translate(p.x + p.w / 2, p.y + p.h / 2);
+        ctx.rotate(p.angle * Math.PI / 180);
+        ctx.fillStyle = p.color;
+        ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+        ctx.restore();
+
+        p.x += p.vx;
+        p.y += p.vy;
+        p.angle += p.va;
+        p.vy += .04; // gravity
+
+        if (p.y > canvas.height) {
+          p.opacity -= .05;
+        }
+      });
+      frame++;
+      if (frame < 300) requestAnimationFrame(drawConfetti);
+    }
+    drawConfetti();
+  </script>
+</body>
+</html>

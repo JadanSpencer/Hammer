@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Checkout — The Dorm Kitchen</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:      #0d1117;
+      --surface: #161c25;
+      --card:    #1d2535;
+      --gold:    #e8b84b;
+      --coral:   #f4845f;
+      --teal:    #3ecfb2;
+      --text:    #f0ece3;
+      --muted:   #8a8a8a;
+      --border:  rgba(232,184,75,.15);
+      --input-bg: rgba(255,255,255,.04);
+      --input-border: rgba(255,255,255,.1);
+      --input-focus: rgba(232,184,75,.4);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      min-height: 100%;
+    }
+
+    body::before {
+      content:''; position:fixed; inset:0; z-index:0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events:none;
+    }
+
+    .blob-wrap { position:fixed; inset:0; z-index:0; overflow:hidden; pointer-events:none; }
+    .blob { position:absolute; border-radius:50%; filter:blur(90px); opacity:.1; animation:drift 20s ease-in-out infinite alternate; }
+    .blob-1 { width:400px; height:400px; background:var(--gold); top:-120px; left:-100px; }
+    .blob-2 { width:300px; height:300px; background:var(--teal); bottom:-60px; right:-60px; animation-delay:-8s; }
+    @keyframes drift { from{transform:translate(0,0);} to{transform:translate(25px,35px);} }
+
+    /* nav */
+    .nav { position:sticky; top:0; z-index:10; display:flex; justify-content:center; }
+    .nav-inner {
+      max-width:430px; width:100%;
+      display:flex; align-items:center; justify-content:space-between;
+      padding:.9rem 1.4rem;
+      background:rgba(13,17,23,.75);
+      backdrop-filter:blur(20px);
+      border-bottom:1px solid var(--border);
+    }
+    .nav-back { display:flex; align-items:center; gap:.5rem; color:var(--muted); font-size:.85rem; text-decoration:none; transition:color .2s; }
+    .nav-back:hover { color:var(--text); }
+    .nav-title { font-family:'Playfair Display',serif; font-size:1rem; color:var(--gold); }
+
+    /* page */
+    .page {
+      position:relative; z-index:1;
+      max-width:430px; margin:0 auto;
+      padding:1.5rem 1.2rem 5rem;
+    }
+
+    /* section header */
+    .section-header { margin-bottom:1.6rem; animation:fadeUp .6s ease both; }
+    .eyebrow { font-size:.7rem; letter-spacing:.16em; text-transform:uppercase; color:var(--teal); margin-bottom:.4rem; }
+    .page-title { font-family:'Playfair Display',serif; font-size:1.9rem; font-weight:900; line-height:1.1; }
+
+    /* order summary */
+    .summary-card {
+      background:var(--card); border:1px solid var(--border);
+      border-radius:18px; padding:1.2rem 1.4rem;
+      margin-bottom:1.6rem;
+      animation:fadeUp .6s .1s ease both;
+    }
+    .summary-label { font-size:.65rem; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); margin-bottom:.7rem; }
+    .summary-dish {
+      display:flex; align-items:center; gap:.8rem;
+    }
+    .summary-icon {
+      width:48px; height:48px; border-radius:12px;
+      display:flex; align-items:center; justify-content:center;
+      font-size:1.5rem; flex-shrink:0;
+    }
+    .summary-icon.dish-1 { background:linear-gradient(135deg,#7a3d0c,#e8b84b); }
+    .summary-icon.dish-2 { background:linear-gradient(135deg,#083550,#1a9e9e); }
+    .summary-name { font-family:'Playfair Display',serif; font-size:1rem; font-weight:700; }
+    .summary-sub { font-size:.78rem; color:var(--muted); margin-top:.1rem; }
+
+    /* form */
+    .form-card {
+      background:var(--card); border:1px solid var(--border);
+      border-radius:18px; padding:1.4rem;
+      animation:fadeUp .6s .2s ease both;
+    }
+    .form-group { margin-bottom:1.2rem; }
+    .form-label {
+      display:block; font-size:.72rem; letter-spacing:.1em;
+      text-transform:uppercase; color:var(--muted); margin-bottom:.55rem;
+    }
+    .form-input, .form-textarea {
+      width:100%;
+      background:var(--input-bg);
+      border:1px solid var(--input-border);
+      border-radius:12px;
+      color:var(--text);
+      font-family:'DM Sans',sans-serif;
+      font-size:.95rem;
+      padding:.85rem 1rem;
+      outline:none;
+      transition:border-color .2s, box-shadow .2s;
+      -webkit-appearance:none;
+    }
+    .form-input::placeholder, .form-textarea::placeholder { color:var(--muted); }
+    .form-input:focus, .form-textarea:focus {
+      border-color:var(--gold);
+      box-shadow:0 0 0 3px var(--input-focus);
+    }
+    .form-textarea { resize:none; min-height:100px; line-height:1.5; }
+
+    /* dish selector */
+    .dish-selector {
+      display:grid; grid-template-columns:1fr 1fr; gap:.75rem;
+      margin-bottom:1.2rem;
+    }
+    .dish-opt {
+      position:relative;
+      background:var(--input-bg);
+      border:2px solid var(--input-border);
+      border-radius:14px;
+      padding:1rem .9rem;
+      cursor:pointer;
+      transition:border-color .2s, background .2s;
+      text-align:center;
+    }
+    .dish-opt input[type=radio] { position:absolute; opacity:0; width:0; height:0; }
+    .dish-opt.selected-1 { border-color:var(--gold); background:rgba(232,184,75,.07); }
+    .dish-opt.selected-2 { border-color:var(--teal); background:rgba(62,207,178,.07); }
+    .dish-opt-icon { font-size:1.6rem; display:block; margin-bottom:.4rem; }
+    .dish-opt-name { font-size:.8rem; font-weight:600; line-height:1.3; }
+    .dish-check {
+      position:absolute; top:8px; right:8px;
+      width:18px; height:18px; border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      font-size:.6rem; font-weight:700;
+      opacity:0; transition:opacity .2s;
+    }
+    .dish-opt.selected-1 .dish-check { background:var(--gold); color:#0d1117; opacity:1; }
+    .dish-opt.selected-2 .dish-check { background:var(--teal); color:#0d1117; opacity:1; }
+
+    /* notice */
+    .wa-notice {
+      display:flex; align-items:flex-start; gap:.7rem;
+      background:rgba(62,207,178,.06); border:1px solid rgba(62,207,178,.2);
+      border-radius:12px; padding:.9rem 1rem;
+      margin-bottom:1.4rem;
+      font-size:.8rem; color:var(--muted); line-height:1.5;
+      animation:fadeUp .6s .35s ease both;
+    }
+    .wa-notice .wa-icon { font-size:1.2rem; flex-shrink:0; margin-top:.05rem; }
+
+    /* submit btn */
+    .submit-btn {
+      display:flex; align-items:center; justify-content:center; gap:.7rem;
+      width:100%; padding:1.05rem;
+      background:var(--gold); color:#0d1117;
+      border:none; border-radius:14px;
+      font-family:'DM Sans',sans-serif;
+      font-size:1rem; font-weight:700;
+      cursor:pointer;
+      box-shadow:0 8px 28px rgba(232,184,75,.3);
+      transition:transform .2s, box-shadow .2s, background .2s;
+      animation:fadeUp .6s .4s ease both;
+    }
+    .submit-btn:hover { transform:translateY(-2px); background:#f0c55a; box-shadow:0 12px 36px rgba(232,184,75,.4); }
+    .submit-btn:active { transform:translateY(0); }
+    .submit-btn:disabled { opacity:.5; pointer-events:none; }
+
+    /* sold out state */
+    .soldout-msg {
+      display:none;
+      background:rgba(244,132,95,.08); border:1px solid rgba(244,132,95,.25);
+      border-radius:14px; padding:1.2rem; text-align:center;
+      color:var(--coral); font-size:.9rem; line-height:1.6;
+      margin-top:1rem; animation:fadeUp .5s ease both;
+    }
+    .soldout-msg.show { display:block; }
+
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(20px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="blob-wrap">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+  </div>
+
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="menu.html" class="nav-back">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M10 12L6 8l4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Menu
+      </a>
+      <span class="nav-title">Checkout</span>
+      <span></span>
+    </div>
+  </nav>
+
+  <main class="page">
+    <div class="section-header">
+      <p class="eyebrow">✦ Almost there</p>
+      <h2 class="page-title">Your<br><em style="color:var(--gold)">Order</em></h2>
+    </div>
+
+    <!-- Order summary -->
+    <div class="summary-card" id="summary-card">
+      <p class="summary-label">Selected Combo</p>
+      <div class="summary-dish">
+        <div class="summary-icon dish-1" id="summary-icon">🍔</div>
+        <div>
+          <p class="summary-name" id="summary-name">The Island Combo</p>
+          <p class="summary-sub">Includes Cobalt blended drink</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <!-- Dish picker -->
+      <p class="form-label">Which combo?</p>
+      <div class="dish-selector">
+        <label class="dish-opt" id="opt-1">
+          <input type="radio" name="dish" value="1" checked />
+          <span class="dish-opt-icon">🍔</span>
+          <span class="dish-opt-name">The Island Combo</span>
+          <span class="dish-check">✓</span>
+        </label>
+        <label class="dish-opt" id="opt-2">
+          <input type="radio" name="dish" value="2" />
+          <span class="dish-opt-icon">🐠</span>
+          <span class="dish-opt-name">The Seaside Plate</span>
+          <span class="dish-check">✓</span>
+        </label>
+      </div>
+
+      <!-- Name -->
+      <div class="form-group">
+        <label class="form-label" for="customer-name">Your Name</label>
+        <input type="text" id="customer-name" class="form-input" placeholder="e.g. Jamie Brown" autocomplete="name" />
+      </div>
+
+      <!-- Special instructions -->
+      <div class="form-group">
+        <label class="form-label" for="instructions">Special Instructions</label>
+        <textarea id="instructions" class="form-textarea" placeholder="Any allergies, preferences, or requests? (optional)"></textarea>
+      </div>
+    </div>
+
+    <div style="height:.8rem"></div>
+
+    <div class="wa-notice">
+      <span class="wa-icon">💬</span>
+      <span>Your order will be sent directly to WhatsApp. You'll be redirected to confirm — make sure WhatsApp is installed.</span>
+    </div>
+
+    <div class="soldout-msg" id="soldout-msg">
+      😔 Sorry, we're fully booked! All 15 slots are taken. Follow up later in case of cancellations.
+    </div>
+
+    <button class="submit-btn" id="submit-btn" onclick="placeOrder()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" fill="currentColor"/>
+        <path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.832-1.438A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Send Order via WhatsApp
+    </button>
+
+  </main>
+
+  <script>
+    const MAX = 15;
+    const WA_NUMBER = '18765499714'; // Jamaican country code + number
+
+    // Read URL params
+    const params = new URLSearchParams(window.location.search);
+    let selectedDish = params.get('dish') || '1';
+    const preselectedName = params.get('name') || '';
+
+    // Update summary
+    function updateSummary(dish) {
+      const icon = document.getElementById('summary-icon');
+      const name = document.getElementById('summary-name');
+      if (dish === '1') {
+        icon.textContent = '🍔';
+        icon.className = 'summary-icon dish-1';
+        name.textContent = 'The Island Combo';
+      } else {
+        icon.textContent = '🐠';
+        icon.className = 'summary-icon dish-2';
+        name.textContent = 'The Seaside Plate';
+      }
+    }
+
+    // Set selected option styles
+    function setSelected(dish) {
+      document.getElementById('opt-1').className = 'dish-opt' + (dish === '1' ? ' selected-1' : '');
+      document.getElementById('opt-2').className = 'dish-opt' + (dish === '2' ? ' selected-2' : '');
+      updateSummary(dish);
+    }
+
+    // Init
+    setSelected(selectedDish);
+    document.querySelectorAll('input[name=dish]').forEach(r => {
+      if (r.value === selectedDish) r.checked = true;
+      r.addEventListener('change', e => {
+        selectedDish = e.target.value;
+        setSelected(selectedDish);
+      });
+    });
+
+    // Check if sold out
+    const count = parseInt(localStorage.getItem('tdkOrderCount') || '0');
+    if (count >= MAX) {
+      document.getElementById('submit-btn').disabled = true;
+      document.getElementById('soldout-msg').classList.add('show');
+    }
+
+    function placeOrder() {
+      const name = document.getElementById('customer-name').value.trim();
+      const instructions = document.getElementById('instructions').value.trim();
+      const dishName = selectedDish === '1' ? 'The Island Combo' : 'The Seaside Plate';
+
+      if (!name) {
+        document.getElementById('customer-name').focus();
+        document.getElementById('customer-name').style.borderColor = 'var(--coral)';
+        setTimeout(() => document.getElementById('customer-name').style.borderColor = '', 2000);
+        return;
+      }
+
+      // Build WhatsApp message
+      let msg = `🍽 *New Pre-Order — The Dorm Kitchen*\n\n`;
+      msg += `👤 *Name:* ${name}\n`;
+      msg += `🥘 *Combo:* ${dishName}\n`;
+      if (instructions) msg += `📝 *Notes:* ${instructions}\n`;
+      msg += `\n✅ Please confirm my order. Thanks!`;
+
+      // Increment count in localStorage
+      const newCount = Math.min(count + 1, MAX);
+      localStorage.setItem('tdkOrderCount', newCount);
+
+      // Open WhatsApp
+      const waUrl = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
+      window.location.href = 'confirm.html';
+      setTimeout(() => window.open(waUrl, '_blank'), 300);
+    }
+  </script>
+</body>
+</html>

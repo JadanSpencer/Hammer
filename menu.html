@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Menu — The Dorm Kitchen</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:       #0d1117;
+      --surface:  #161c25;
+      --card:     #1d2535;
+      --gold:     #e8b84b;
+      --coral:    #f4845f;
+      --teal:     #3ecfb2;
+      --text:     #f0ece3;
+      --muted:    #8a8a8a;
+      --border:   rgba(232,184,75,.15);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      min-height: 100%;
+    }
+
+    /* noise */
+    body::before {
+      content:''; position:fixed; inset:0; z-index:0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events:none;
+    }
+
+    /* blobs */
+    .blob-wrap { position:fixed; inset:0; z-index:0; overflow:hidden; pointer-events:none; }
+    .blob { position:absolute; border-radius:50%; filter:blur(90px); opacity:.13; animation:drift 20s ease-in-out infinite alternate; }
+    .blob-1 { width:500px; height:500px; background:var(--gold); top:-200px; right:-150px; }
+    .blob-2 { width:350px; height:350px; background:var(--teal); bottom:-100px; left:-80px; animation-duration:16s; animation-delay:-6s; }
+    @keyframes drift { from { transform:translate(0,0) scale(1); } to { transform:translate(20px,30px) scale(1.06); } }
+
+    /* nav */
+    .nav {
+      position: sticky; top: 0; z-index: 10;
+      display: flex; justify-content: center;
+    }
+    .nav-inner {
+      max-width: 430px; width: 100%;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: .9rem 1.4rem;
+      background: rgba(13,17,23,.75);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-back {
+      display: flex; align-items: center; gap: .5rem;
+      color: var(--muted); font-size: .85rem; text-decoration: none;
+      transition: color .2s;
+    }
+    .nav-back:hover { color: var(--text); }
+    .nav-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem; color: var(--gold);
+    }
+    .nav-slots {
+      font-size: .75rem; color: var(--teal); font-weight: 500;
+    }
+
+    /* page wrapper */
+    .page {
+      position: relative; z-index: 1;
+      max-width: 430px; margin: 0 auto;
+      padding: 1.5rem 1.2rem 6rem;
+    }
+
+    /* section header */
+    .section-header {
+      margin-bottom: 1.8rem;
+      animation: fadeUp .6s ease both;
+    }
+    .section-eyebrow {
+      font-size: .7rem; letter-spacing: .16em;
+      text-transform: uppercase; color: var(--teal);
+      margin-bottom: .4rem;
+    }
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.7rem; font-weight: 900;
+      line-height: 1.1;
+    }
+    .section-sub { font-size: .85rem; color: var(--muted); margin-top: .4rem; line-height:1.5; }
+
+    /* ── MEAL CARD ── */
+    .meal-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      overflow: hidden;
+      margin-bottom: 1.6rem;
+      animation: fadeUp .7s ease both;
+      transition: transform .3s, box-shadow .3s;
+    }
+    .meal-card:hover { transform: translateY(-4px); box-shadow: 0 20px 60px rgba(0,0,0,.4); }
+    .meal-card:nth-child(2) { animation-delay: .15s; }
+
+    /* image placeholder */
+    .meal-img {
+      position: relative;
+      height: 200px;
+      overflow: hidden;
+    }
+    .meal-img-bg {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column; gap: .6rem;
+    }
+    /* Dish 1 — warm tropical gradient */
+    .meal-card.dish-1 .meal-img-bg {
+      background: linear-gradient(135deg, #3a2006 0%, #7a3d0c 40%, #c4710f 70%, #e8b84b 100%);
+    }
+    /* Dish 2 — deep ocean gradient */
+    .meal-card.dish-2 .meal-img-bg {
+      background: linear-gradient(135deg, #041a2e 0%, #083550 40%, #0e5f7e 75%, #1a9e9e 100%);
+    }
+
+    .placeholder-icon {
+      font-size: 4rem;
+      filter: drop-shadow(0 4px 12px rgba(0,0,0,.5));
+      animation: floatIcon 3s ease-in-out infinite;
+    }
+    @keyframes floatIcon {
+      0%,100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+    .placeholder-text {
+      font-size: .7rem; letter-spacing: .14em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.4);
+    }
+
+    /* badge */
+    .meal-badge {
+      position: absolute; top: 12px; left: 12px;
+      background: rgba(13,17,23,.7);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: .25rem .75rem;
+      font-size: .68rem; letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+    .meal-badge.dish-2-badge { color: var(--teal); border-color: rgba(62,207,178,.25); }
+
+    /* price badge */
+    .price-badge {
+      position: absolute; top: 12px; right: 12px;
+      background: var(--gold);
+      color: #0d1117;
+      border-radius: 12px;
+      padding: .3rem .75rem;
+      font-size: .85rem; font-weight: 700;
+    }
+
+    /* card body */
+    .meal-body { padding: 1.3rem 1.4rem 1.5rem; }
+
+    .meal-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.35rem; font-weight: 900;
+      margin-bottom: .25rem;
+    }
+    .meal-desc { font-size: .82rem; color: var(--muted); line-height: 1.5; margin-bottom: 1.1rem; }
+
+    .includes-label {
+      font-size: .65rem; letter-spacing: .14em;
+      text-transform: uppercase; color: var(--muted);
+      margin-bottom: .6rem;
+    }
+
+    /* items list */
+    .items-grid {
+      display: flex; flex-direction: column; gap: .45rem;
+      margin-bottom: 1.3rem;
+    }
+    .item-row {
+      display: flex; align-items: center; gap: .65rem;
+      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(255,255,255,.05);
+      border-radius: 10px;
+      padding: .5rem .75rem;
+    }
+    .item-icon { font-size: 1.1rem; flex-shrink: 0; }
+    .item-name { font-size: .85rem; font-weight: 500; flex: 1; }
+    .item-qty {
+      font-size: .72rem; color: var(--muted);
+      background: rgba(255,255,255,.05);
+      border-radius: 6px; padding: .15rem .45rem;
+    }
+
+    /* drink row */
+    .drink-row {
+      display: flex; align-items: center; gap: .65rem;
+      background: linear-gradient(90deg, rgba(62,207,178,.06), rgba(232,184,75,.06));
+      border: 1px solid rgba(62,207,178,.15);
+      border-radius: 10px;
+      padding: .55rem .75rem;
+      margin-bottom: 1.3rem;
+    }
+    .drink-icon { font-size: 1.1rem; }
+    .drink-name { font-size: .85rem; font-weight: 600; }
+    .drink-tag {
+      margin-left: auto; font-size: .65rem;
+      color: var(--teal); letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+
+    /* CTA */
+    .order-btn {
+      display: flex; align-items: center; justify-content: center; gap: .6rem;
+      width: 100%; padding: .95rem;
+      border: none; border-radius: 14px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .95rem; font-weight: 600;
+      cursor: pointer; text-decoration: none;
+      transition: transform .2s, box-shadow .2s;
+    }
+    .order-btn.btn-gold {
+      background: var(--gold); color: #0d1117;
+      box-shadow: 0 6px 24px rgba(232,184,75,.3);
+    }
+    .order-btn.btn-teal {
+      background: var(--teal); color: #0d1117;
+      box-shadow: 0 6px 24px rgba(62,207,178,.25);
+    }
+    .order-btn:hover { transform: translateY(-2px); }
+    .order-btn:active { transform: translateY(0); }
+
+    /* divider */
+    .or-divider {
+      display: flex; align-items: center; gap: 1rem;
+      margin: 1.4rem 0 .2rem;
+      font-size: .72rem; color: var(--muted); letter-spacing: .1em; text-transform: uppercase;
+      animation: fadeUp .6s .3s ease both;
+    }
+    .or-divider::before, .or-divider::after { content:''; flex:1; height:1px; background:var(--border); }
+
+    /* sticky bottom CTA */
+    .sticky-cta {
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 10;
+      display: flex; justify-content: center;
+    }
+    .sticky-inner {
+      max-width: 430px; width: 100%;
+      padding: .8rem 1.2rem 1.2rem;
+      background: rgba(13,17,23,.85);
+      backdrop-filter: blur(20px);
+      border-top: 1px solid var(--border);
+    }
+    .sticky-inner a {
+      display: flex; align-items: center; justify-content: center; gap: .6rem;
+      background: var(--gold); color: #0d1117;
+      border-radius: 14px; padding: .95rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .95rem; font-weight: 700;
+      text-decoration: none;
+      transition: transform .2s, background .2s;
+    }
+    .sticky-inner a:hover { transform: translateY(-1px); background: #f0c55a; }
+
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(20px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="blob-wrap">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+  </div>
+
+  <!-- Nav -->
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-back">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M10 12L6 8l4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Home
+      </a>
+      <span class="nav-title">Menu</span>
+      <span class="nav-slots" id="nav-slots">15 spots</span>
+    </div>
+  </nav>
+
+  <main class="page">
+    <div class="section-header">
+      <p class="section-eyebrow">✦ This Weekend Only</p>
+      <h2 class="section-title">Choose<br><em style="color:var(--gold)">Your Plate</em></h2>
+      <p class="section-sub">Homemade with love. Pre-order before we sell out.</p>
+    </div>
+
+    <!-- ── DISH 1 ── -->
+    <div class="meal-card dish-1">
+      <div class="meal-img">
+        <div class="meal-img-bg">
+          <span class="placeholder-icon">🍔</span>
+          <span class="placeholder-text">Photo coming soon</span>
+        </div>
+        <span class="meal-badge">Combo 1</span>
+        <span class="price-badge">🔥 Popular</span>
+      </div>
+
+      <div class="meal-body">
+        <h3 class="meal-name">The Island Combo</h3>
+        <p class="meal-desc">A tropical spin on the classic — sweet, bold, and fully loaded. Everything you need in one tray.</p>
+
+        <p class="includes-label">Includes</p>
+        <div class="items-grid">
+          <div class="item-row">
+            <span class="item-icon">🍔</span>
+            <span class="item-name">Pineapple Chicken Burger</span>
+            <span class="item-qty">1 pc</span>
+          </div>
+          <div class="item-row">
+            <span class="item-icon">🍟</span>
+            <span class="item-name">Loaded Fries</span>
+            <span class="item-qty">1 serving</span>
+          </div>
+          <div class="item-row">
+            <span class="item-icon">🍗</span>
+            <span class="item-name">Mango Glazed Wings</span>
+            <span class="item-qty">3 pcs</span>
+          </div>
+          <div class="item-row">
+            <span class="item-icon">🫓</span>
+            <span class="item-name">Festival</span>
+            <span class="item-qty">2 pcs</span>
+          </div>
+        </div>
+
+        <div class="drink-row">
+          <span class="drink-icon">🧋</span>
+          <span class="drink-name">Cobalt Blended Drink</span>
+          <span class="drink-tag">Complimentary</span>
+        </div>
+
+        <a href="checkout.html?dish=1&name=The+Island+Combo" class="order-btn btn-gold">
+          Order This Combo
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M1 7h12M8 2l5 5-5 5" stroke="#0d1117" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+
+    <div class="or-divider">or</div>
+
+    <!-- ── DISH 2 ── -->
+    <div class="meal-card dish-2" style="animation-delay:.15s">
+      <div class="meal-img">
+        <div class="meal-img-bg">
+          <span class="placeholder-icon">🐠</span>
+          <span class="placeholder-text">Photo coming soon</span>
+        </div>
+        <span class="meal-badge dish-2-badge">Combo 2</span>
+        <span class="price-badge" style="background:var(--teal)">🌊 Chef's Pick</span>
+      </div>
+
+      <div class="meal-body">
+        <h3 class="meal-name">The Seaside Plate</h3>
+        <p class="meal-desc">A proper roots-style fish plate — slow-cooked, seasoned deep, and served with all the sides.</p>
+
+        <p class="includes-label">Includes</p>
+        <div class="items-grid">
+          <div class="item-row">
+            <span class="item-icon">🍲</span>
+            <span class="item-name">Brown Stew Fish</span>
+            <span class="item-qty">1–2 pcs</span>
+          </div>
+          <div class="item-row">
+            <span class="item-icon">🐟</span>
+            <span class="item-name">Fried Sprat</span>
+            <span class="item-qty">2–3 pcs</span>
+          </div>
+          <div class="item-row">
+            <span class="item-icon">🥔</span>
+            <span class="item-name">Garlic Mashed Potatoes</span>
+            <span class="item-qty">1 serving</span>
+          </div>
+          <div class="item-row">
+            <span class="item-icon">🫓</span>
+            <span class="item-name">Festival</span>
+            <span class="item-qty">1–2 pcs</span>
+          </div>
+          <div class="item-row">
+            <span class="item-icon">🥗</span>
+            <span class="item-name">Fresh Salad</span>
+            <span class="item-qty">1 serving</span>
+          </div>
+        </div>
+
+        <div class="drink-row">
+          <span class="drink-icon">🧋</span>
+          <span class="drink-name">Cobalt Blended Drink</span>
+          <span class="drink-tag">Complimentary</span>
+        </div>
+
+        <a href="checkout.html?dish=2&name=The+Seaside+Plate" class="order-btn btn-teal">
+          Order This Combo
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M1 7h12M8 2l5 5-5 5" stroke="#0d1117" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Sticky bottom -->
+  <div class="sticky-cta">
+    <div class="sticky-inner">
+      <a href="checkout.html">
+        🛒 Pre-order Now — <span id="sticky-slots">15</span> slots remaining
+      </a>
+    </div>
+  </div>
+
+  <script>
+    const count = parseInt(localStorage.getItem('tdkOrderCount') || '0');
+    const left = Math.max(0, 15 - count);
+    document.getElementById('nav-slots').textContent = left + ' spots';
+    document.getElementById('sticky-slots').textContent = left;
+  </script>
+</body>
+</html>
