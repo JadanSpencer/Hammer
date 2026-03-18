@@ -273,6 +273,11 @@
           <span class="sd-free">Free</span>
         </div>
 
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:1rem 0;border-top:1px solid var(--border);margin-bottom:1.2rem;">
+          <span style="font-size:.82rem;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;">Total</span>
+          <span style="font-family:'Fraunces',serif;font-size:1.5rem;font-weight:700;color:var(--amber-lt);">J$2,000</span>
+        </div>
+
         <div class="soldout-msg" id="soldout-msg">
           😔 All spots are taken. Check back for cancellations.
         </div>
@@ -362,10 +367,11 @@
       msg += `👤 *Name:* ${name}\n`;
       msg += `🥘 *Combo:* ${dishName}\n`;
       if (notes) msg += `📝 *Notes:* ${notes}\n`;
+      msg += `💰 *Total:* J$2,000\n`;
       msg += `\n✅ Please confirm my order. Thanks!`;
       localStorage.setItem('hhcOrderCount', Math.min(count + 1, 15));
       window.open(`https://wa.me/${WA}?text=${encodeURIComponent(msg)}`, '_blank');
-      setTimeout(() => { window.location.href = 'confirm.html'; }, 400);
+      setTimeout(() => { window.location.href = 'order-confirmation.html'; }, 400);
     }
   </script>
 </body>
