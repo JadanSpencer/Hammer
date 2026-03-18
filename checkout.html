@@ -3,362 +3,369 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Checkout — The Dorm Kitchen</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <title>Checkout — Hammerhead Cafe</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;0,9..144,900;1,9..144,400;1,9..144,700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg:      #0d1117;
-      --surface: #161c25;
-      --card:    #1d2535;
-      --gold:    #e8b84b;
-      --coral:   #f4845f;
-      --teal:    #3ecfb2;
-      --text:    #f0ece3;
-      --muted:   #8a8a8a;
-      --border:  rgba(232,184,75,.15);
-      --input-bg: rgba(255,255,255,.04);
-      --input-border: rgba(255,255,255,.1);
-      --input-focus: rgba(232,184,75,.4);
+      --bg:       #0e0b08;
+      --surface:  #181310;
+      --card:     #221c16;
+      --amber:    #c8831a;
+      --amber-lt: #e8a84b;
+      --sage:     #7a9e7e;
+      --coral:    #e07050;
+      --text:     #f0e6d3;
+      --muted:    #937e6a;
+      --border:   rgba(200,131,26,.18);
+      --ibg:      rgba(255,255,255,.04);
+      --ib:       rgba(255,255,255,.1);
     }
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body {
-      font-family: 'DM Sans', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      overflow-x: hidden;
-      min-height: 100%;
+    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+    body {
+      font-family:'Outfit',sans-serif;
+      background:var(--bg); color:var(--text);
+      min-height:100dvh; overflow-x:hidden;
+    }
+    body::after {
+      content:''; position:fixed; inset:0; z-index:100;
+      background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='0.05'/%3E%3C/svg%3E");
+      pointer-events:none; opacity:.6;
+    }
+    .bg-glow {
+      position:fixed; inset:0; z-index:0; pointer-events:none;
+      background:
+        radial-gradient(ellipse 55% 45% at 0% 0%,  rgba(200,131,26,.12) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 50% at 100% 100%, rgba(122,158,126,.09) 0%, transparent 58%);
     }
 
-    body::before {
-      content:''; position:fixed; inset:0; z-index:0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-      pointer-events:none;
-    }
-
-    .blob-wrap { position:fixed; inset:0; z-index:0; overflow:hidden; pointer-events:none; }
-    .blob { position:absolute; border-radius:50%; filter:blur(90px); opacity:.1; animation:drift 20s ease-in-out infinite alternate; }
-    .blob-1 { width:400px; height:400px; background:var(--gold); top:-120px; left:-100px; }
-    .blob-2 { width:300px; height:300px; background:var(--teal); bottom:-60px; right:-60px; animation-delay:-8s; }
-    @keyframes drift { from{transform:translate(0,0);} to{transform:translate(25px,35px);} }
-
-    /* nav */
-    .nav { position:sticky; top:0; z-index:10; display:flex; justify-content:center; }
-    .nav-inner {
-      max-width:430px; width:100%;
+    /* Nav */
+    .navbar { position:sticky; top:0; z-index:50; display:flex; justify-content:center; }
+    .navbar-inner {
+      width:100%; max-width:1160px;
       display:flex; align-items:center; justify-content:space-between;
-      padding:.9rem 1.4rem;
-      background:rgba(13,17,23,.75);
-      backdrop-filter:blur(20px);
+      padding:1rem 2rem;
+      background:rgba(14,11,8,.8); backdrop-filter:blur(20px);
       border-bottom:1px solid var(--border);
     }
-    .nav-back { display:flex; align-items:center; gap:.5rem; color:var(--muted); font-size:.85rem; text-decoration:none; transition:color .2s; }
+    .nav-back { display:flex; align-items:center; gap:.45rem; color:var(--muted); font-size:.85rem; text-decoration:none; transition:color .2s; }
     .nav-back:hover { color:var(--text); }
-    .nav-title { font-family:'Playfair Display',serif; font-size:1rem; color:var(--gold); }
+    .nav-logo { font-family:'Fraunces',serif; font-size:1.1rem; font-weight:700; color:var(--amber-lt); text-decoration:none; }
 
-    /* page */
+    /* Page layout */
     .page {
       position:relative; z-index:1;
-      max-width:430px; margin:0 auto;
-      padding:1.5rem 1.2rem 5rem;
+      max-width:1160px; margin:0 auto;
+      padding:3rem 2rem 5rem;
+      display:grid;
+      grid-template-columns: 1fr 440px;
+      gap:3rem;
+      align-items:start;
     }
 
-    /* section header */
-    .section-header { margin-bottom:1.6rem; animation:fadeUp .6s ease both; }
-    .eyebrow { font-size:.7rem; letter-spacing:.16em; text-transform:uppercase; color:var(--teal); margin-bottom:.4rem; }
-    .page-title { font-family:'Playfair Display',serif; font-size:1.9rem; font-weight:900; line-height:1.1; }
+    /* Left column — header + form */
+    .col-form {}
 
-    /* order summary */
-    .summary-card {
-      background:var(--card); border:1px solid var(--border);
-      border-radius:18px; padding:1.2rem 1.4rem;
-      margin-bottom:1.6rem;
-      animation:fadeUp .6s .1s ease both;
-    }
-    .summary-label { font-size:.65rem; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); margin-bottom:.7rem; }
-    .summary-dish {
-      display:flex; align-items:center; gap:.8rem;
-    }
-    .summary-icon {
-      width:48px; height:48px; border-radius:12px;
-      display:flex; align-items:center; justify-content:center;
-      font-size:1.5rem; flex-shrink:0;
-    }
-    .summary-icon.dish-1 { background:linear-gradient(135deg,#7a3d0c,#e8b84b); }
-    .summary-icon.dish-2 { background:linear-gradient(135deg,#083550,#1a9e9e); }
-    .summary-name { font-family:'Playfair Display',serif; font-size:1rem; font-weight:700; }
-    .summary-sub { font-size:.78rem; color:var(--muted); margin-top:.1rem; }
+    .eyebrow { font-size:.7rem; letter-spacing:.18em; text-transform:uppercase; color:var(--sage); margin-bottom:.55rem; animation:fadeUp .6s ease both; }
+    .page-title { font-family:'Fraunces',serif; font-size:clamp(2.2rem,4vw,3.2rem); font-weight:900; line-height:1.05; margin-bottom:2rem; animation:fadeUp .6s .08s ease both; }
+    .page-title em { font-style:italic; font-weight:400; color:var(--amber-lt); }
 
-    /* form */
-    .form-card {
-      background:var(--card); border:1px solid var(--border);
-      border-radius:18px; padding:1.4rem;
-      animation:fadeUp .6s .2s ease both;
-    }
-    .form-group { margin-bottom:1.2rem; }
-    .form-label {
-      display:block; font-size:.72rem; letter-spacing:.1em;
-      text-transform:uppercase; color:var(--muted); margin-bottom:.55rem;
-    }
-    .form-input, .form-textarea {
-      width:100%;
-      background:var(--input-bg);
-      border:1px solid var(--input-border);
-      border-radius:12px;
-      color:var(--text);
-      font-family:'DM Sans',sans-serif;
-      font-size:.95rem;
-      padding:.85rem 1rem;
-      outline:none;
-      transition:border-color .2s, box-shadow .2s;
-      -webkit-appearance:none;
-    }
-    .form-input::placeholder, .form-textarea::placeholder { color:var(--muted); }
-    .form-input:focus, .form-textarea:focus {
-      border-color:var(--gold);
-      box-shadow:0 0 0 3px var(--input-focus);
-    }
-    .form-textarea { resize:none; min-height:100px; line-height:1.5; }
-
-    /* dish selector */
-    .dish-selector {
-      display:grid; grid-template-columns:1fr 1fr; gap:.75rem;
-      margin-bottom:1.2rem;
-    }
+    /* Dish selector */
+    .selector-label { font-size:.68rem; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); margin-bottom:.7rem; animation:fadeUp .6s .14s ease both; }
+    .dish-selector { display:grid; grid-template-columns:1fr 1fr; gap:.8rem; margin-bottom:1.8rem; animation:fadeUp .6s .18s ease both; }
     .dish-opt {
       position:relative;
-      background:var(--input-bg);
-      border:2px solid var(--input-border);
-      border-radius:14px;
-      padding:1rem .9rem;
-      cursor:pointer;
-      transition:border-color .2s, background .2s;
-      text-align:center;
+      background:var(--ibg); border:2px solid var(--ib);
+      border-radius:14px; padding:1rem;
+      cursor:pointer; transition:border-color .2s, background .2s;
+      display:flex; align-items:center; gap:.75rem;
     }
     .dish-opt input[type=radio] { position:absolute; opacity:0; width:0; height:0; }
-    .dish-opt.selected-1 { border-color:var(--gold); background:rgba(232,184,75,.07); }
-    .dish-opt.selected-2 { border-color:var(--teal); background:rgba(62,207,178,.07); }
-    .dish-opt-icon { font-size:1.6rem; display:block; margin-bottom:.4rem; }
-    .dish-opt-name { font-size:.8rem; font-weight:600; line-height:1.3; }
+    .dish-opt.sel-1 { border-color:var(--amber); background:rgba(200,131,26,.07); }
+    .dish-opt.sel-2 { border-color:var(--sage);  background:rgba(122,158,126,.07); }
+    .dish-opt-icon-wrap {
+      width:40px; height:40px; border-radius:10px; flex-shrink:0;
+      display:flex; align-items:center; justify-content:center; font-size:1.3rem;
+    }
+    .d1-ic { background:linear-gradient(135deg,#3a1e06,#c8831a); }
+    .d2-ic { background:linear-gradient(135deg,#0e2a1a,#3a7d58); }
+    .dish-opt-text { flex:1; }
+    .dish-opt-name { font-size:.88rem; font-weight:600; line-height:1.25; }
+    .dish-opt-sub  { font-size:.72rem; color:var(--muted); margin-top:.08rem; }
     .dish-check {
-      position:absolute; top:8px; right:8px;
       width:18px; height:18px; border-radius:50%;
       display:flex; align-items:center; justify-content:center;
-      font-size:.6rem; font-weight:700;
+      font-size:.6rem; font-weight:700; flex-shrink:0;
       opacity:0; transition:opacity .2s;
     }
-    .dish-opt.selected-1 .dish-check { background:var(--gold); color:#0d1117; opacity:1; }
-    .dish-opt.selected-2 .dish-check { background:var(--teal); color:#0d1117; opacity:1; }
+    .dish-opt.sel-1 .dish-check { background:var(--amber); color:#0e0b08; opacity:1; }
+    .dish-opt.sel-2 .dish-check { background:var(--sage);  color:#0e0b08; opacity:1; }
 
-    /* notice */
-    .wa-notice {
-      display:flex; align-items:flex-start; gap:.7rem;
-      background:rgba(62,207,178,.06); border:1px solid rgba(62,207,178,.2);
-      border-radius:12px; padding:.9rem 1rem;
-      margin-bottom:1.4rem;
-      font-size:.8rem; color:var(--muted); line-height:1.5;
-      animation:fadeUp .6s .35s ease both;
+    /* Form fields */
+    .form-card {
+      background:var(--card); border:1px solid var(--border);
+      border-radius:18px; padding:1.6rem;
+      animation:fadeUp .6s .22s ease both;
     }
-    .wa-notice .wa-icon { font-size:1.2rem; flex-shrink:0; margin-top:.05rem; }
+    .form-group { margin-bottom:1.3rem; }
+    .form-group:last-child { margin-bottom:0; }
+    .form-label { display:block; font-size:.7rem; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); margin-bottom:.5rem; }
+    .form-input, .form-textarea {
+      width:100%; background:var(--ibg); border:1px solid var(--ib);
+      border-radius:11px; color:var(--text);
+      font-family:'Outfit',sans-serif; font-size:.95rem;
+      padding:.82rem 1rem; outline:none;
+      transition:border-color .2s, box-shadow .2s; -webkit-appearance:none;
+    }
+    .form-input::placeholder,.form-textarea::placeholder { color:var(--muted); }
+    .form-input:focus,.form-textarea:focus { border-color:var(--amber); box-shadow:0 0 0 3px rgba(200,131,26,.2); }
+    .form-textarea { resize:none; min-height:100px; line-height:1.55; }
 
-    /* submit btn */
+    /* Right column — order summary */
+    .col-summary { position:sticky; top:90px; animation:fadeUp .6s .25s ease both; }
+
+    .summary-card {
+      background:var(--card); border:1px solid var(--border);
+      border-radius:20px; padding:1.8rem; overflow:hidden;
+    }
+    .summary-header { font-size:.65rem; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); margin-bottom:1.2rem; }
+
+    .summary-dish-row {
+      display:flex; align-items:center; gap:1rem; margin-bottom:1.4rem;
+    }
+    .summary-icon {
+      width:56px; height:56px; border-radius:14px; flex-shrink:0;
+      display:flex; align-items:center; justify-content:center; font-size:1.8rem;
+    }
+    .si-1 { background:linear-gradient(135deg,#3a1e06,#c8831a); }
+    .si-2 { background:linear-gradient(135deg,#0e2a1a,#3a7d58); }
+    .summary-dish-name { font-family:'Fraunces',serif; font-size:1.1rem; font-weight:700; }
+    .summary-dish-sub  { font-size:.78rem; color:var(--muted); margin-top:.12rem; }
+
+    .summary-items { list-style:none; display:flex; flex-direction:column; gap:.38rem; margin-bottom:1.3rem; }
+    .summary-item {
+      display:flex; align-items:center; justify-content:space-between;
+      font-size:.82rem; color:var(--muted); padding:.32rem 0;
+      border-bottom:1px solid rgba(255,255,255,.05);
+    }
+    .summary-item:last-child { border-bottom:none; }
+    .si-left { display:flex; align-items:center; gap:.5rem; }
+
+    .summary-drink {
+      display:flex; align-items:center; gap:.7rem;
+      background:rgba(122,158,126,.07); border:1px solid rgba(122,158,126,.18);
+      border-radius:10px; padding:.6rem .85rem; margin-bottom:1.5rem;
+      font-size:.83rem;
+    }
+    .sd-free { margin-left:auto; font-size:.65rem; color:var(--sage); font-weight:600; letter-spacing:.08em; text-transform:uppercase; }
+
+    /* Submit */
     .submit-btn {
-      display:flex; align-items:center; justify-content:center; gap:.7rem;
+      display:flex; align-items:center; justify-content:center; gap:.65rem;
       width:100%; padding:1.05rem;
-      background:var(--gold); color:#0d1117;
-      border:none; border-radius:14px;
-      font-family:'DM Sans',sans-serif;
-      font-size:1rem; font-weight:700;
-      cursor:pointer;
-      box-shadow:0 8px 28px rgba(232,184,75,.3);
-      transition:transform .2s, box-shadow .2s, background .2s;
-      animation:fadeUp .6s .4s ease both;
+      background:var(--amber); color:#0e0b08;
+      border:none; border-radius:13px;
+      font-family:'Outfit',sans-serif; font-size:.97rem; font-weight:700;
+      cursor:pointer; box-shadow:0 8px 28px rgba(200,131,26,.35);
+      transition:transform .22s, box-shadow .22s, background .2s;
     }
-    .submit-btn:hover { transform:translateY(-2px); background:#f0c55a; box-shadow:0 12px 36px rgba(232,184,75,.4); }
-    .submit-btn:active { transform:translateY(0); }
-    .submit-btn:disabled { opacity:.5; pointer-events:none; }
+    .submit-btn:hover { transform:translateY(-2px); background:var(--amber-lt); box-shadow:0 12px 36px rgba(200,131,26,.5); }
+    .submit-btn:disabled { opacity:.42; pointer-events:none; }
 
-    /* sold out state */
+    .wa-note {
+      display:flex; align-items:flex-start; gap:.6rem;
+      margin-top:1rem; font-size:.76rem; color:var(--muted); line-height:1.55;
+    }
+
     .soldout-msg {
-      display:none;
-      background:rgba(244,132,95,.08); border:1px solid rgba(244,132,95,.25);
-      border-radius:14px; padding:1.2rem; text-align:center;
-      color:var(--coral); font-size:.9rem; line-height:1.6;
-      margin-top:1rem; animation:fadeUp .5s ease both;
+      display:none; margin-top:.9rem;
+      background:rgba(224,112,80,.07); border:1px solid rgba(224,112,80,.22);
+      border-radius:11px; padding:.9rem 1rem;
+      text-align:center; color:var(--coral); font-size:.84rem; line-height:1.6;
     }
     .soldout-msg.show { display:block; }
 
-    @keyframes fadeUp {
-      from { opacity:0; transform:translateY(20px); }
-      to   { opacity:1; transform:translateY(0); }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(16px);} to{opacity:1;transform:translateY(0);} }
+
+    @media (max-width:860px) {
+      .page { grid-template-columns:1fr; gap:2rem; padding:2rem 1.2rem 5rem; }
+      .col-summary { position:static; }
+      .navbar-inner { padding:.85rem 1.2rem; }
     }
   </style>
 </head>
 <body>
+  <div class="bg-glow"></div>
 
-  <div class="blob-wrap">
-    <div class="blob blob-1"></div>
-    <div class="blob blob-2"></div>
-  </div>
-
-  <nav class="nav">
-    <div class="nav-inner">
+  <nav class="navbar">
+    <div class="navbar-inner">
       <a href="menu.html" class="nav-back">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
           <path d="M10 12L6 8l4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
         Menu
       </a>
-      <span class="nav-title">Checkout</span>
+      <a href="index.html" class="nav-logo">🦈 Hammerhead Cafe</a>
       <span></span>
     </div>
   </nav>
 
   <main class="page">
-    <div class="section-header">
-      <p class="eyebrow">✦ Almost there</p>
-      <h2 class="page-title">Your<br><em style="color:var(--gold)">Order</em></h2>
-    </div>
+    <!-- Left: form -->
+    <div class="col-form">
+      <p class="eyebrow">✦ Almost done</p>
+      <h2 class="page-title">Place Your<br><em>Order</em></h2>
 
-    <!-- Order summary -->
-    <div class="summary-card" id="summary-card">
-      <p class="summary-label">Selected Combo</p>
-      <div class="summary-dish">
-        <div class="summary-icon dish-1" id="summary-icon">🍔</div>
-        <div>
-          <p class="summary-name" id="summary-name">The Island Combo</p>
-          <p class="summary-sub">Includes Cobalt blended drink</p>
-        </div>
-      </div>
-    </div>
-
-    <div class="form-card">
-      <!-- Dish picker -->
-      <p class="form-label">Which combo?</p>
+      <p class="selector-label">Choose your combo</p>
       <div class="dish-selector">
-        <label class="dish-opt" id="opt-1">
+        <label class="dish-opt sel-1" id="opt-1">
           <input type="radio" name="dish" value="1" checked />
-          <span class="dish-opt-icon">🍔</span>
-          <span class="dish-opt-name">The Island Combo</span>
+          <div class="dish-opt-icon-wrap d1-ic">🍔</div>
+          <div class="dish-opt-text">
+            <p class="dish-opt-name">Island Combo</p>
+            <p class="dish-opt-sub">Burger, wings, fries</p>
+          </div>
           <span class="dish-check">✓</span>
         </label>
         <label class="dish-opt" id="opt-2">
           <input type="radio" name="dish" value="2" />
-          <span class="dish-opt-icon">🐠</span>
-          <span class="dish-opt-name">The Seaside Plate</span>
+          <div class="dish-opt-icon-wrap d2-ic">🐠</div>
+          <div class="dish-opt-text">
+            <p class="dish-opt-name">Seaside Plate</p>
+            <p class="dish-opt-sub">Fish, sprat, mash</p>
+          </div>
           <span class="dish-check">✓</span>
         </label>
       </div>
 
-      <!-- Name -->
-      <div class="form-group">
-        <label class="form-label" for="customer-name">Your Name</label>
-        <input type="text" id="customer-name" class="form-input" placeholder="e.g. Jamie Brown" autocomplete="name" />
+      <div class="form-card">
+        <div class="form-group">
+          <label class="form-label" for="name">Your Name</label>
+          <input type="text" id="name" class="form-input" placeholder="e.g. Jamie Brown" autocomplete="name" />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="notes">Special Instructions <span style="color:var(--muted);font-size:.68rem;text-transform:none;letter-spacing:0">(optional)</span></label>
+          <textarea id="notes" class="form-textarea" placeholder="Allergies, preferences, anything…"></textarea>
+        </div>
       </div>
+    </div>
 
-      <!-- Special instructions -->
-      <div class="form-group">
-        <label class="form-label" for="instructions">Special Instructions</label>
-        <textarea id="instructions" class="form-textarea" placeholder="Any allergies, preferences, or requests? (optional)"></textarea>
+    <!-- Right: summary + submit -->
+    <div class="col-summary">
+      <div class="summary-card">
+        <p class="summary-header">Your Order</p>
+
+        <div class="summary-dish-row">
+          <div class="summary-icon si-1" id="sum-icon">🍔</div>
+          <div>
+            <p class="summary-dish-name" id="sum-name">The Island Combo</p>
+            <p class="summary-dish-sub">Hammerhead Cafe · Weekend Special</p>
+          </div>
+        </div>
+
+        <ul class="summary-items" id="sum-items">
+          <!-- filled by JS -->
+        </ul>
+
+        <div class="summary-drink">
+          <span style="font-size:1.1rem">🧋</span>
+          <span style="font-size:.84rem;font-weight:600">Cobalt Blend</span>
+          <span class="sd-free">Free</span>
+        </div>
+
+        <div class="soldout-msg" id="soldout-msg">
+          😔 All spots are taken. Check back for cancellations.
+        </div>
+
+        <button class="submit-btn" id="submit-btn" onclick="placeOrder()">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" fill="currentColor"/>
+            <path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.832-1.438A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Send Order via WhatsApp
+        </button>
+
+        <div class="wa-note">
+          <span style="font-size:1.1rem;flex-shrink:0">💬</span>
+          <span>Your order goes straight to WhatsApp. Make sure the app is open on your device.</span>
+        </div>
       </div>
     </div>
-
-    <div style="height:.8rem"></div>
-
-    <div class="wa-notice">
-      <span class="wa-icon">💬</span>
-      <span>Your order will be sent directly to WhatsApp. You'll be redirected to confirm — make sure WhatsApp is installed.</span>
-    </div>
-
-    <div class="soldout-msg" id="soldout-msg">
-      😔 Sorry, we're fully booked! All 15 slots are taken. Follow up later in case of cancellations.
-    </div>
-
-    <button class="submit-btn" id="submit-btn" onclick="placeOrder()">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" fill="currentColor"/>
-        <path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.832-1.438A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      Send Order via WhatsApp
-    </button>
-
   </main>
 
   <script>
-    const MAX = 15;
-    const WA_NUMBER = '18765499714'; // Jamaican country code + number
-
-    // Read URL params
-    const params = new URLSearchParams(window.location.search);
-    let selectedDish = params.get('dish') || '1';
-    const preselectedName = params.get('name') || '';
-
-    // Update summary
-    function updateSummary(dish) {
-      const icon = document.getElementById('summary-icon');
-      const name = document.getElementById('summary-name');
-      if (dish === '1') {
-        icon.textContent = '🍔';
-        icon.className = 'summary-icon dish-1';
-        name.textContent = 'The Island Combo';
-      } else {
-        icon.textContent = '🐠';
-        icon.className = 'summary-icon dish-2';
-        name.textContent = 'The Seaside Plate';
+    const WA = '18765499714';
+    const DISHES = {
+      '1': {
+        name: 'The Island Combo', icon: '🍔', iconClass: 'si-1',
+        items: [
+          ['🍔','Pineapple Chicken Burger','1 pc'],
+          ['🍟','Loaded Fries','1 serving'],
+          ['🍗','Mango Glazed Wings','3 pcs'],
+          ['🫓','Festival','2 pcs'],
+        ]
+      },
+      '2': {
+        name: 'The Seaside Plate', icon: '🐠', iconClass: 'si-2',
+        items: [
+          ['🍲','Brown Stew Fish','1–2 pcs'],
+          ['🐟','Fried Sprat','2–3 pcs'],
+          ['🥔','Garlic Mashed Potatoes','1 serving'],
+          ['🫓','Festival','1–2 pcs'],
+          ['🥗','Fresh Salad','1 serving'],
+        ]
       }
+    };
+
+    const params = new URLSearchParams(window.location.search);
+    let dish = params.get('dish') || '1';
+
+    function setDish(d) {
+      dish = d;
+      document.getElementById('opt-1').className = 'dish-opt' + (d==='1' ? ' sel-1' : '');
+      document.getElementById('opt-2').className = 'dish-opt' + (d==='2' ? ' sel-2' : '');
+      const D = DISHES[d];
+      document.getElementById('sum-icon').textContent = D.icon;
+      document.getElementById('sum-icon').className = 'summary-icon ' + D.iconClass;
+      document.getElementById('sum-name').textContent = D.name;
+      const ul = document.getElementById('sum-items');
+      ul.innerHTML = D.items.map(([ic, nm, qty]) =>
+        `<li class="summary-item"><span class="si-left"><span>${ic}</span><span>${nm}</span></span><span>${qty}</span></li>`
+      ).join('');
     }
 
-    // Set selected option styles
-    function setSelected(dish) {
-      document.getElementById('opt-1').className = 'dish-opt' + (dish === '1' ? ' selected-1' : '');
-      document.getElementById('opt-2').className = 'dish-opt' + (dish === '2' ? ' selected-2' : '');
-      updateSummary(dish);
-    }
-
-    // Init
-    setSelected(selectedDish);
+    setDish(dish);
     document.querySelectorAll('input[name=dish]').forEach(r => {
-      if (r.value === selectedDish) r.checked = true;
-      r.addEventListener('change', e => {
-        selectedDish = e.target.value;
-        setSelected(selectedDish);
-      });
+      if (r.value === dish) r.checked = true;
+      r.addEventListener('change', e => setDish(e.target.value));
     });
 
-    // Check if sold out
-    const count = parseInt(localStorage.getItem('tdkOrderCount') || '0');
-    if (count >= MAX) {
+    const count = parseInt(localStorage.getItem('hhcOrderCount') || '0');
+    if (count >= 15) {
       document.getElementById('submit-btn').disabled = true;
       document.getElementById('soldout-msg').classList.add('show');
     }
 
     function placeOrder() {
-      const name = document.getElementById('customer-name').value.trim();
-      const instructions = document.getElementById('instructions').value.trim();
-      const dishName = selectedDish === '1' ? 'The Island Combo' : 'The Seaside Plate';
-
+      const name = document.getElementById('name').value.trim();
+      const notes = document.getElementById('notes').value.trim();
+      const inp = document.getElementById('name');
       if (!name) {
-        document.getElementById('customer-name').focus();
-        document.getElementById('customer-name').style.borderColor = 'var(--coral)';
-        setTimeout(() => document.getElementById('customer-name').style.borderColor = '', 2000);
+        inp.focus();
+        inp.style.borderColor = 'var(--coral)';
+        inp.style.boxShadow = '0 0 0 3px rgba(224,112,80,.2)';
+        setTimeout(() => { inp.style.borderColor = ''; inp.style.boxShadow = ''; }, 2200);
         return;
       }
-
-      // Build WhatsApp message
-      let msg = `🍽 *New Pre-Order — The Dorm Kitchen*\n\n`;
+      const dishName = DISHES[dish].name;
+      let msg = `🦈 *Hammerhead Cafe — New Pre-Order*\n\n`;
       msg += `👤 *Name:* ${name}\n`;
       msg += `🥘 *Combo:* ${dishName}\n`;
-      if (instructions) msg += `📝 *Notes:* ${instructions}\n`;
+      if (notes) msg += `📝 *Notes:* ${notes}\n`;
       msg += `\n✅ Please confirm my order. Thanks!`;
-
-      // Increment count in localStorage
-      const newCount = Math.min(count + 1, MAX);
-      localStorage.setItem('tdkOrderCount', newCount);
-
-      // Open WhatsApp
-      const waUrl = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
-      window.location.href = 'confirm.html';
-      setTimeout(() => window.open(waUrl, '_blank'), 300);
+      localStorage.setItem('hhcOrderCount', Math.min(count + 1, 15));
+      window.open(`https://wa.me/${WA}?text=${encodeURIComponent(msg)}`, '_blank');
+      setTimeout(() => { window.location.href = 'confirm.html'; }, 400);
     }
   </script>
 </body>

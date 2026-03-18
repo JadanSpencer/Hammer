@@ -3,235 +3,192 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Order Confirmed — The Dorm Kitchen</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <title>Order Confirmed — Hammerhead Cafe</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;0,9..144,900;1,9..144,400;1,9..144,700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg:     #0d1117;
-      --card:   #1d2535;
-      --gold:   #e8b84b;
-      --coral:  #f4845f;
-      --teal:   #3ecfb2;
-      --text:   #f0ece3;
-      --muted:  #8a8a8a;
-      --border: rgba(232,184,75,.15);
+      --bg:       #0e0b08;
+      --card:     #221c16;
+      --amber:    #c8831a;
+      --amber-lt: #e8a84b;
+      --sage:     #7a9e7e;
+      --text:     #f0e6d3;
+      --muted:    #937e6a;
+      --border:   rgba(200,131,26,.18);
     }
 
     *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
-    html, body {
-      height:100%;
-      font-family:'DM Sans',sans-serif;
-      background:var(--bg);
-      color:var(--text);
-      overflow-x:hidden;
+    body {
+      font-family:'Outfit',sans-serif;
+      background:var(--bg); color:var(--text);
+      min-height:100dvh; overflow-x:hidden;
+    }
+    body::after {
+      content:''; position:fixed; inset:0; z-index:100;
+      background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='0.05'/%3E%3C/svg%3E");
+      pointer-events:none; opacity:.6;
+    }
+    .bg-glow {
+      position:fixed; inset:0; z-index:0; pointer-events:none;
+      background:
+        radial-gradient(ellipse 70% 55% at 50% 30%, rgba(200,131,26,.1) 0%, transparent 62%),
+        radial-gradient(ellipse 50% 45% at 10% 90%, rgba(122,158,126,.1) 0%, transparent 55%);
     }
 
-    body::before {
-      content:''; position:fixed; inset:0; z-index:0;
-      background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-      pointer-events:none;
+    canvas#confetti { position:fixed; inset:0; z-index:1; pointer-events:none; }
+
+    /* Navbar */
+    .navbar { position:sticky; top:0; z-index:50; display:flex; justify-content:center; }
+    .navbar-inner {
+      width:100%; max-width:1160px;
+      display:flex; align-items:center; justify-content:center;
+      padding:1rem 2rem;
+      background:rgba(14,11,8,.8); backdrop-filter:blur(20px);
+      border-bottom:1px solid var(--border);
     }
+    .nav-logo { font-family:'Fraunces',serif; font-size:1.1rem; font-weight:700; color:var(--amber-lt); text-decoration:none; }
 
-    /* blobs */
-    .blob-wrap { position:fixed; inset:0; z-index:0; overflow:hidden; pointer-events:none; }
-    .blob { position:absolute; border-radius:50%; filter:blur(90px); opacity:.15; animation:drift 18s ease-in-out infinite alternate; }
-    .blob-1 { width:450px; height:450px; background:var(--teal); top:-150px; right:-100px; }
-    .blob-2 { width:350px; height:350px; background:var(--gold); bottom:-80px; left:-80px; animation-delay:-7s; }
-    @keyframes drift { from{transform:translate(0,0);} to{transform:translate(20px,30px);} }
-
-    /* confetti canvas */
-    #confetti { position:fixed; inset:0; z-index:0; pointer-events:none; }
-
-    /* page */
+    /* Page */
     .page {
-      position:relative; z-index:1;
-      min-height:100dvh;
+      position:relative; z-index:2;
+      min-height:calc(100dvh - 60px);
       display:flex; flex-direction:column;
       align-items:center; justify-content:center;
-      max-width:430px; margin:0 auto;
-      padding:2rem 1.5rem 3rem;
-      text-align:center;
+      max-width:600px; margin:0 auto;
+      padding:3rem 2rem; text-align:center;
     }
 
-    /* checkmark */
+    /* Check */
     .check-ring {
-      width:96px; height:96px;
-      border-radius:50%;
-      background:linear-gradient(135deg, var(--teal), var(--gold));
+      width:92px; height:92px; border-radius:50%;
+      background:linear-gradient(135deg, var(--amber), var(--sage));
       display:flex; align-items:center; justify-content:center;
-      margin-bottom:1.8rem;
-      animation:popIn .6s cubic-bezier(.34,1.56,.64,1) both;
-      box-shadow:0 0 0 0 rgba(62,207,178,.4);
-      animation: popIn .6s cubic-bezier(.34,1.56,.64,1) both, ringPulse 2.5s 1s ease infinite;
+      margin:0 auto 2rem;
+      animation:popIn .65s cubic-bezier(.34,1.56,.64,1) both, ringPulse 3s 1.5s ease infinite;
     }
-    .check-ring svg { width:44px; height:44px; }
-    @keyframes popIn {
-      from { opacity:0; transform:scale(.3); }
-      to   { opacity:1; transform:scale(1); }
-    }
+    @keyframes popIn { from{opacity:0;transform:scale(.15);} to{opacity:1;transform:scale(1);} }
     @keyframes ringPulse {
-      0%   { box-shadow:0 0 0 0 rgba(62,207,178,.4); }
-      70%  { box-shadow:0 0 0 20px rgba(62,207,178,0); }
-      100% { box-shadow:0 0 0 0 rgba(62,207,178,0); }
+      0%   { box-shadow:0 0 0 0 rgba(200,131,26,.4); }
+      70%  { box-shadow:0 0 0 22px rgba(200,131,26,0); }
+      100% { box-shadow:0 0 0 0 rgba(200,131,26,0); }
     }
 
-    /* text */
-    .confirm-tag {
-      font-size:.72rem; letter-spacing:.18em; text-transform:uppercase;
-      color:var(--teal); margin-bottom:.8rem;
-      animation:fadeUp .6s .2s ease both;
-    }
-    .confirm-title {
-      font-family:'Playfair Display',serif;
-      font-size:clamp(2.4rem,10vw,3.2rem);
-      font-weight:900; line-height:1.08;
+    .eyebrow { font-size:.7rem; letter-spacing:.18em; text-transform:uppercase; color:var(--sage); margin-bottom:.7rem; animation:fadeUp .6s .2s ease both; }
+
+    .conf-title {
+      font-family:'Fraunces',serif;
+      font-size:clamp(2.8rem,8vw,4.2rem); font-weight:900; line-height:1.05;
       animation:fadeUp .6s .3s ease both;
     }
-    .confirm-title .accent { color:var(--gold); font-style:italic; }
+    .conf-title em { font-style:italic; font-weight:400; color:var(--amber-lt); }
 
-    .confirm-msg {
-      margin-top:.9rem;
-      font-size:.9rem; color:var(--muted); line-height:1.6;
-      animation:fadeUp .6s .4s ease both;
+    .conf-msg {
+      margin-top:1rem; font-size:.94rem; color:var(--muted); line-height:1.7;
+      max-width:420px; animation:fadeUp .6s .42s ease both;
     }
 
-    /* info pill */
-    .info-pill {
-      margin-top:1.8rem;
-      display:flex; align-items:center; gap:.6rem;
-      background:var(--card);
-      border:1px solid var(--border);
-      border-radius:100px;
-      padding:.6rem 1.2rem;
-      font-size:.82rem;
-      animation:fadeUp .6s .5s ease both;
+    /* Status */
+    .status-pill {
+      display:inline-flex; align-items:center; gap:.5rem;
+      background:rgba(122,158,126,.1); border:1px solid rgba(122,158,126,.22);
+      border-radius:100px; padding:.38rem 1rem;
+      font-size:.74rem; color:var(--sage);
+      margin-top:1.6rem;
+      animation:fadeUp .6s .52s ease both;
     }
-    .info-pill .dot { width:8px; height:8px; border-radius:50%; background:var(--teal); animation:blink 1.5s ease infinite; }
-    @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:.3;} }
+    .live-dot { width:6px; height:6px; border-radius:50%; background:var(--sage); animation:blink 2s ease infinite; }
+    @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:.2;} }
 
-    /* buttons */
+    /* Buttons */
     .btn-group {
-      display:flex; flex-direction:column; gap:.75rem;
-      width:100%; margin-top:2rem;
-      animation:fadeUp .6s .65s ease both;
+      display:flex; align-items:center; gap:1rem; flex-wrap:wrap; justify-content:center;
+      margin-top:2.2rem; animation:fadeUp .6s .62s ease both;
     }
     .btn {
-      display:flex; align-items:center; justify-content:center; gap:.6rem;
-      padding:.95rem; border-radius:14px;
-      font-family:'DM Sans',sans-serif;
-      font-size:.95rem; font-weight:600;
+      display:inline-flex; align-items:center; justify-content:center; gap:.55rem;
+      padding:.92rem 1.7rem; border-radius:13px;
+      font-family:'Outfit',sans-serif; font-size:.94rem; font-weight:600;
       text-decoration:none; border:none; cursor:pointer;
       transition:transform .2s, box-shadow .2s;
     }
-    .btn-primary {
-      background:var(--gold); color:#0d1117;
-      box-shadow:0 6px 24px rgba(232,184,75,.3);
-    }
-    .btn-secondary {
-      background:var(--card);
-      color:var(--text);
-      border:1px solid var(--border);
-    }
-    .btn:hover { transform:translateY(-2px); }
-    .btn:active { transform:translateY(0); }
+    .btn-primary { background:var(--amber); color:#0e0b08; box-shadow:0 6px 24px rgba(200,131,26,.35); }
+    .btn-primary:hover { transform:translateY(-2px); background:var(--amber-lt); }
+    .btn-secondary { background:var(--card); color:var(--text); border:1px solid var(--border); }
+    .btn-secondary:hover { transform:translateY(-2px); border-color:rgba(200,131,26,.4); }
 
-    /* decorative emoji row */
-    .emoji-row {
-      font-size:1.8rem; letter-spacing:.3rem;
-      margin-top:2rem; opacity:.5;
-      animation:fadeUp .6s .8s ease both;
-    }
+    .deco { font-size:1.8rem; letter-spacing:.4rem; margin-top:2.4rem; opacity:.35; animation:fadeUp .6s .75s ease both; }
 
-    @keyframes fadeUp {
-      from { opacity:0; transform:translateY(18px); }
-      to   { opacity:1; transform:translateY(0); }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(16px);} to{opacity:1;transform:translateY(0);} }
+
+    @media (max-width:600px) {
+      .page { padding:2rem 1.4rem; }
+      .btn-group { flex-direction:column; width:100%; }
+      .btn { width:100%; }
     }
   </style>
 </head>
 <body>
-  <div class="blob-wrap">
-    <div class="blob blob-1"></div>
-    <div class="blob blob-2"></div>
-  </div>
+  <div class="bg-glow"></div>
   <canvas id="confetti"></canvas>
+
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a href="index.html" class="nav-logo">🦈 Hammerhead Cafe</a>
+    </div>
+  </nav>
 
   <main class="page">
     <div class="check-ring">
-      <svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M10 22L18 30L34 14" stroke="#0d1117" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+        <path d="M8 20L16 28L32 12" stroke="#0e0b08" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
     </div>
 
-    <p class="confirm-tag">✦ You're all set</p>
-    <h1 class="confirm-title">Order<br><span class="accent">Confirmed!</span></h1>
-    <p class="confirm-msg">
-      Your pre-order has been sent via WhatsApp.<br>
-      We'll confirm shortly. Get ready for good food!
+    <p class="eyebrow">✦ You're all set</p>
+    <h1 class="conf-title">Order<br><em>Confirmed!</em></h1>
+    <p class="conf-msg">
+      Your pre-order has been sent via WhatsApp. We'll confirm your spot shortly — get ready for something good.
     </p>
 
-    <div class="info-pill">
-      <span class="dot"></span>
-      <span>Awaiting WhatsApp confirmation</span>
-    </div>
+    <span class="status-pill">
+      <span class="live-dot"></span>
+      Awaiting WhatsApp confirmation
+    </span>
 
     <div class="btn-group">
-      <a href="index.html" class="btn btn-primary">
-        🏠 Back to Home
-      </a>
-      <a href="menu.html" class="btn btn-secondary">
-        📋 View Menu Again
-      </a>
+      <a href="index.html" class="btn btn-primary">🏠 Back to Home</a>
+      <a href="menu.html"  class="btn btn-secondary">📋 View Menu</a>
     </div>
 
-    <div class="emoji-row">🍔 🐠 🧋</div>
+    <div class="deco">🦈 &nbsp; 🧋 &nbsp; 🐠</div>
   </main>
 
   <script>
-    // ── Simple confetti ──
     const canvas = document.getElementById('confetti');
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-
-    const colors = ['#e8b84b','#3ecfb2','#f4845f','#f0ece3','#ffffff'];
-    const pieces = Array.from({length: 80}, () => ({
-      x: Math.random() * canvas.width,
-      y: -10 - Math.random() * 200,
-      w: 6 + Math.random() * 8,
-      h: 3 + Math.random() * 5,
-      color: colors[Math.floor(Math.random() * colors.length)],
-      vx: (Math.random() - .5) * 2,
-      vy: 1.5 + Math.random() * 2.5,
-      angle: Math.random() * 360,
-      va: (Math.random() - .5) * 6,
-      opacity: 1,
+    const cols = ['#c8831a','#e8a84b','#7a9e7e','#f0e6d3','#ffffff','#3a7d58'];
+    const pieces = Array.from({length:75}, () => ({
+      x: Math.random()*canvas.width, y: -10-Math.random()*160,
+      w:5+Math.random()*7, h:3+Math.random()*5,
+      color:cols[Math.floor(Math.random()*cols.length)],
+      vx:(Math.random()-.5)*2, vy:1.4+Math.random()*2.3,
+      angle:Math.random()*360, va:(Math.random()-.5)*5, opacity:1,
     }));
-
-    let frame = 0;
-    function drawConfetti() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    let f=0;
+    (function draw() {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
       pieces.forEach(p => {
-        ctx.save();
-        ctx.globalAlpha = p.opacity;
-        ctx.translate(p.x + p.w / 2, p.y + p.h / 2);
-        ctx.rotate(p.angle * Math.PI / 180);
-        ctx.fillStyle = p.color;
-        ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+        ctx.save(); ctx.globalAlpha=p.opacity;
+        ctx.translate(p.x+p.w/2,p.y+p.h/2); ctx.rotate(p.angle*Math.PI/180);
+        ctx.fillStyle=p.color; ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
         ctx.restore();
-
-        p.x += p.vx;
-        p.y += p.vy;
-        p.angle += p.va;
-        p.vy += .04; // gravity
-
-        if (p.y > canvas.height) {
-          p.opacity -= .05;
-        }
+        p.x+=p.vx; p.y+=p.vy; p.angle+=p.va; p.vy+=.04;
+        if(p.y>canvas.height) p.opacity=Math.max(0,p.opacity-.04);
       });
-      frame++;
-      if (frame < 300) requestAnimationFrame(drawConfetti);
-    }
-    drawConfetti();
+      if(++f<320) requestAnimationFrame(draw);
+    })();
   </script>
 </body>
 </html>
