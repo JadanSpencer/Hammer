@@ -164,6 +164,7 @@
   </main>
 
   <script>
+    // Confetti
     const canvas = document.getElementById('confetti');
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
@@ -189,6 +190,13 @@
       });
       if(++f<320) requestAnimationFrame(draw);
     })();
+
+    // Open WhatsApp after animation has settled (1.8s lets all fadeUp + popIn finish)
+    const waUrl = sessionStorage.getItem('hhcWaUrl');
+    if (waUrl) {
+      sessionStorage.removeItem('hhcWaUrl');
+      setTimeout(() => window.open(waUrl, '_blank'), 1800);
+    }
   </script>
 </body>
 </html>

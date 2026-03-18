@@ -370,8 +370,8 @@
       msg += `💰 *Total:* J$2,000\n`;
       msg += `\n✅ Please confirm my order. Thanks!`;
       localStorage.setItem('hhcOrderCount', Math.min(count + 1, 15));
-      window.open(`https://wa.me/${WA}?text=${encodeURIComponent(msg)}`, '_blank');
-      setTimeout(() => { window.location.href = 'order-confirmation.html'; }, 400);
+      sessionStorage.setItem('hhcWaUrl', `https://wa.me/${WA}?text=${encodeURIComponent(msg)}`);
+      window.location.href = 'confirm.html';
     }
   </script>
 </body>
